@@ -14783,7 +14783,8 @@ html[dir] .r4crx ._2GgBs{
 .r4crx ._3m_5X{
     z-index:2;
     height:100%;
-    margin: 0 auto;
+    width: 100%;
+    /* margin: 0 auto; */
 }
 ._2k1om{
     -webkit-flex:1;
@@ -16135,4 +16136,13 @@ html[dir=rtl] ._2ICcy:after{
 }
 #main {
     display:none;
+}
+._2oKVP {
+    display: flex;
+    justify-content: center;
+}
+#picture-camera{
+    height: 100%;
+    width: auto;
+    text-align: center;
 }
