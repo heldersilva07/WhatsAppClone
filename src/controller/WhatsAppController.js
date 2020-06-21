@@ -2,6 +2,8 @@ import {Format} from './../util/Format';
 import {CameraController} from './CameraController';
 import {MicrophoneController} from './MicrophoneController';
 import {DocumentPreviewController} from './DocumentPreviewController';
+import { Firebase } from './../util/Firebase';
+import { User } from './../model/User';
 
 export class WhatsAppController{
 
@@ -9,10 +11,57 @@ export class WhatsAppController{
 
         console.log('WhatsAppController ok');
 
+        this._firebase = new Firebase();
+        this.initAuth();
         this.elementsPrototype();
         this.loadElements();
         this.initEvents();
         this.closeAllLeftPanel();
+        
+
+    }
+
+    initAuth(){
+
+        this._firebase.initAuth()
+            .then(response =>{
+                //console.log('resposta' , response);
+
+                this._user = new User(response.user.email);
+
+                this._user.on('datachange', data=>{
+
+                    document.querySelector('title').innerHTML = data.name + '-WhatsApp Clone';
+
+                    this.el.inputNamePanelEditProfile.innerHTML = data.name;
+
+                    if(data.name){
+
+                        let photo = this.el.imgPanelEditProfile;
+                        photo.src = data.photo;
+                        photo.show();
+                        this.el.imgDefaultPanelEditProfile.hide();
+
+                        let photo2 = this.el.myPhoto.querySelector('img');
+                        photo2.src = data.photo;
+                        photo2.show();
+                    }
+
+                });
+
+                this._user.name = response.user.displayName;
+                this._user.email= response.user.email;
+                this._user.photo = response.user.photoURL;
+
+                this._user.save().then(()=>{
+                    this.el.appContent.css({
+                        display: 'flex'
+                    });
+                });
+            })
+            .catch(err=>{
+                console.log(err);
+            });
 
     }
 
