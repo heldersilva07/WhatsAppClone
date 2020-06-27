@@ -38,6 +38,15 @@ export class User extends Model {
         this._data.photo = value;
     }
 
+    get chatId(){
+
+        return this._data.chatId;
+    }
+
+    set chatId(value){
+        this._data.chatId = value;
+    }
+
     getById(id){
 
         return new Promise((s, f)=>{
@@ -46,6 +55,7 @@ export class User extends Model {
                 
                 this.fromJSON(doc.data());
 
+                s(doc);
             });
 
         });
@@ -69,6 +79,44 @@ export class User extends Model {
         return User.getRef().doc(email);
     }
 
+    static getContactsRef(id){
+        return User.getRef()
+        .doc(id)
+        .collection('contacts');
+    }
 
+    addContact(contact){
 
+        return User.getContactsRef(this.email)
+        .doc(btoa(contact.email))
+        .set(contact.toJSON());
+    }
+
+    getContacts(){
+
+        return new Promise ((s, f)=>{
+
+            User.getContactsRef(this.email).onSnapshot(docs =>{
+
+                let contacts = [];
+
+                docs.forEach(doc=>{
+
+                    let data = doc.data();
+
+                    data.id = doc.id;
+
+                    contacts.push(data);
+
+                });
+
+                this.trigger('contactschange', docs);
+
+                s(contacts);
+                
+            });
+
+        });
+
+    }
 }
